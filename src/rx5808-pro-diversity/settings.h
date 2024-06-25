@@ -38,6 +38,7 @@ SOFTWARE.
 // SSH1106 needs https://github.com/badzz/Adafruit_SH1106 installed.
 //#define SH1106
 
+//#define USE_UI_FEATURE
 //#define TVOUT_SCREENS
 #define OLED_128x64_ADAFRUIT_SCREENS
 

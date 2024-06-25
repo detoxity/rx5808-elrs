@@ -40,17 +40,20 @@ SOFTWARE.
 #include "channels.h"
 #include "receiver.h"
 #include "receiver_spi.h"
+
+#ifdef USE_UI_FEATURE
 #include "buttons.h"
 #include "state.h"
 
 #include "ui.h"
 
 
+
 static void globalMenuButtonHandler(
     Button button,
     Buttons::PressType pressType
 );
-
+#endif
 
 void setup()
 {
@@ -61,10 +64,14 @@ void setup()
     digitalWrite(PIN_BUZZER, LOW);
 
     setupSettings();
-
+#ifdef USE_UI_FEATURE
     StateMachine::setup();
+#endif 
     Receiver::setup();
+    
+#ifdef USE_UI_FEATURE
     Ui::setup();
+#endif
 
     Receiver::setActiveReceiver(Receiver::ReceiverId::A);
 
@@ -78,20 +85,25 @@ void setup()
     // Setup complete.
     digitalWrite(PIN_LED, LOW);
     digitalWrite(PIN_BUZZER, HIGH);
-
+    
+#ifdef USE_UI_FEATURE
     Buttons::registerChangeFunc(globalMenuButtonHandler);
-
+    
     // Switch to initial state.
     StateMachine::switchState(StateMachine::State::SEARCH);
+#endif
 }
 
 void setupPins() {
     pinMode(PIN_LED, OUTPUT);
     pinMode(PIN_BUZZER, OUTPUT);
+
+#ifdef USE_UI_FEATURE
     pinMode(PIN_BUTTON_UP, INPUT_PULLUP);
     pinMode(PIN_BUTTON_MODE, INPUT_PULLUP);
     pinMode(PIN_BUTTON_DOWN, INPUT_PULLUP);
     pinMode(PIN_BUTTON_SAVE, INPUT_PULLUP);
+#endif
 
     pinMode(PIN_LED_A,OUTPUT);
     #ifdef USE_DIVERSITY
@@ -120,11 +132,13 @@ void setupSettings() {
 
 void loop() {
     Receiver::update();
+#ifdef USE_UI_FEATURE
     Buttons::update();
     StateMachine::update();
     Ui::update();
+#endif
     EepromSettings.update();
-
+#ifdef USE_UI_FEATURE
     if (
         StateMachine::currentState != StateMachine::State::SCREENSAVER
         && StateMachine::currentState != StateMachine::State::BANDSCAN
@@ -133,9 +147,10 @@ void loop() {
     ) {
         StateMachine::switchState(StateMachine::State::SCREENSAVER);
     }
+#endif
 }
 
-
+#ifdef USE_UI_FEATURE
 static void globalMenuButtonHandler(
     Button button,
     Buttons::PressType pressType
@@ -148,3 +163,4 @@ static void globalMenuButtonHandler(
         StateMachine::switchState(StateMachine::State::MENU);
     }
 }
+#endif
